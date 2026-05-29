@@ -36,15 +36,11 @@ class MutationEngine:
 
             codons = []
 
-            for _ in range(
-                len(
-                    protein_sequence
-                )
-            ):
+            for aa in protein_sequence:
 
                 chosen_codon = (
                     random.choice(
-                        all_codons
+                        genetic_code[aa]
                     )
                 )
 
@@ -114,52 +110,49 @@ class MutationEngine:
     
     def mutate_codon(
     self,
-    codon
+    codon, 
+    genetic_code, 
+    codon_lookup
     ):
-        """
-        Mutate one base
-        inside a codon.
-        """
-
-        codon_list = list(
-            codon
-        )
-
-        position = (
-            random.randint(
-                0,
-                2
-            )
-        )
-
-        codon_list[position] = (
-            self.mutate_base(
-                codon_list[position]
-            )
-        )
-
-        return "".join(
-            codon_list
-        )
-    
+        # 1. מוצאים לאיזו חומצת אמינו הקודון הנוכחי שייך
+        amino_acid = codon_lookup.get(codon)
+        if not amino_acid:
+            return codon
+            
+        # 2. שולפים את כל הקודונים האלטרנטיביים שמקודדים לאותה חומצה בדיוק
+        alternatives = genetic_code.get(amino_acid, [codon])
+        
+        # 3. אם יש חלופות, בוחרים אחת אחרת באקראי
+        if len(alternatives) > 1:
+            return random.choice([c for c in alternatives if c != codon])
+        return codon
+        
     def crossover(
     self,
-    candidate
+    candidate,
+    partner
     ):
-        """
-        Placeholder.
-
-        No crossover yet.
-        """
-
-        return candidate
     
+        """
+        מבצע זיווג בין שני הורים ברמת הקודונים לשמירה על שלמות המבנה
+        """
+        # הגרלת נקודת חיתוך אקראית לאורך הגן
+        cut_point = random.randint(1, len(candidate.codons) - 2)
+        
+        # יצירת רצף משולב: חצי מאבא, חצי מאמא
+        child_codons = candidate.codons[:cut_point] + partner.codons[cut_point:]
+        
+        return CandidateSolution(child_codons)
+    
+
     def mutate(
     self,
-    candidate
+    candidate,
+    genetic_code,
+    codon_lookup
     ):
         """
-        Mutate candidate solution.
+        Mutate candidate solution smoothly using synonymous codons.
         """
 
         mutated_candidate = (
@@ -195,18 +188,14 @@ class MutationEngine:
 
             new_codon = (
                 self.mutate_codon(
-                    old_codon
+                    old_codon,
+                    genetic_code=genetic_code,
+                    codon_lookup=codon_lookup
                 )
             )
 
             mutated_candidate.codons[
                 pos
             ] = new_codon
-
-        mutated_candidate = (
-            self.crossover(
-                mutated_candidate
-            )
-        )
 
         return mutated_candidate

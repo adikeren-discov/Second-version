@@ -3,7 +3,8 @@ import random
 
 def fix_codon_repeats(
     codon_sequence,
-    aa_to_codons
+    aa_to_codons,
+    budget
 ):
     """
     Replace repeated codons
@@ -18,6 +19,9 @@ def fix_codon_repeats(
         1,
         len(sequence)
     ):
+
+        if budget <= 0:
+            break
 
         current = sequence[i]
         previous = sequence[i - 1]
@@ -53,13 +57,15 @@ def fix_codon_repeats(
                         alternatives
                     )
                 )
+                budget -= 1
 
-    return sequence
+    return sequence, budget
 
 def improve_bad_codons(
     codon_sequence,
     aa_to_codons,
     ecoli_frequencies,
+    budget,
     threshold=0.5
 ):
     """
@@ -74,6 +80,9 @@ def improve_bad_codons(
     for i, codon in enumerate(
         sequence
     ):
+
+        if budget <= 0:
+            break
 
         score = (
             ecoli_frequencies.get(
@@ -108,9 +117,9 @@ def improve_bad_codons(
             )
         )
 
-        sequence[i] = (
-            best_codon
-        )
+        if sequence[i] != best_codon:
+            sequence[i] = best_codon
+            budget -= 1
 
     return sequence
 
@@ -120,22 +129,28 @@ def apply_heuristics(
     ecoli_frequencies
 ):
     """
-    Local optimization step.
+    ניהול תקופת החיים המוגבלת של הפרט (תקציב N)
     """
+    import config  # ייבוא ה-config כדי לקרוא את התקציב והסף
 
-    sequence = (
-        fix_codon_repeats(
-            codon_sequence,
-            aa_to_codons
-        )
+    # 1. טעינת תקציב התחנתי מהקונפיג (למשל 5)
+    initial_budget = config.LOCAL_HEURISTIC_BUDGET
+    threshold = config.BAD_CODON_THRESHOLD
+
+    # 2. הרצת שלב א' (חזרתיות) וקבלת יתרת התקציב
+    sequence, remaining_budget = fix_codon_repeats(
+        codon_sequence, 
+        aa_to_codons, 
+        initial_budget
     )
 
-    sequence = (
-        improve_bad_codons(
-            sequence,
-            aa_to_codons,
-            ecoli_frequencies
-        )
+    # 3. הרצת שלב ב' (קודונים גרועים) עם מה שנשאר מהתקציב
+    final_sequence = improve_bad_codons(
+        sequence, 
+        aa_to_codons, 
+        ecoli_frequencies, 
+        remaining_budget,
+        threshold=threshold
     )
 
-    return sequence
+    return final_sequence

@@ -16,6 +16,7 @@ from processing import(
 from mutation_engine import(
     MutationEngine
 )
+import random
 
 class CodonOptimizationStrategy(
     ABC
@@ -117,12 +118,18 @@ class CodonOptimizationStrategy(
                 mutated_child = (
                     mut
                     .mutate(
-                        child
+                        child,
+                        genetic_code=self.genetic_mapping, 
+                        codon_lookup=self.codon_lookup
                     )
                 )
 
+                partner = random.choice(population)
+
+                final_child = mut.crossover(mutated_child, partner)
+
                 mutated.append(
-                    mutated_child
+                    final_child
                 )
 
         return mutated
@@ -149,12 +156,10 @@ class CodonOptimizationStrategy(
 
             score = (
                 fitness(
-                    self.protein_sequence,
-                    self.frequencies_score,
-                    self.genetic_mapping,
-                    codon_lookup=(
-                        self.codon_lookup
-                    )
+                    codon_sequence=candidate.codons,
+                    ecoli_frequencies=self.frequencies_score,
+                    target_protein=self.protein_sequence,
+                    codon_lookup=self.codon_lookup
                 )
             )
 
