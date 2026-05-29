@@ -17,12 +17,17 @@ from mutation_engine import (
     
 )
 
+from evolutionary_algorithms_version_2.experiment_tracker import (
+    EvolutionTracker
+)
+
 from config import (
     POPULATION_SIZE,
     GENERATIONS,
     INSULIN_SEQUENCE_FILE,
     MAPPING_FILE,
-    ECOLI_FREQUENCIES_FILE
+    ECOLI_FREQUENCIES_FILE,
+    INITIAL_MISMATCH
 )
 
 from processing import(
@@ -35,7 +40,8 @@ def run_strategy_simulation(
     strategy,
     strategy_name,
     population,
-    generations
+    generations,
+    tracker
 ):
     """
     Run evolutionary simulation.
@@ -94,6 +100,21 @@ def run_strategy_simulation(
             f"{avg_score:.3f}"
         )
 
+        tracker.add_generation(
+        strategy_name=(
+            strategy_name
+        ),
+        generation=(
+            generation + 1
+        ),
+        avg_score=(
+            avg_score
+        ),
+        best_score=(
+            best_score
+        )
+)
+
     return current_population
 
 def main():
@@ -129,6 +150,19 @@ def main():
         )
         )
     )
+    initial_population = (
+    MutationEngine.introduce_initial_mutations(
+        population=(
+            initial_population
+            ),
+        mutation_rate=(
+            INITIAL_MISMATCH
+            ),
+        genetic_code=(
+            aa_to_codons
+            )
+    )
+)
     #print(f"insulin: {protein}")
     #print(initial_population)
 
@@ -156,7 +190,9 @@ def main():
         )
     )
 
-    
+    tracker = (
+    EvolutionTracker()
+    )
     
     run_strategy_simulation(
         strategy=(
@@ -170,7 +206,8 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
 
     run_strategy_simulation(
@@ -185,7 +222,8 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
 
     run_strategy_simulation(
@@ -200,8 +238,11 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
+
+    tracker.plot_results()
 
 if __name__ == "__main__":
     main()

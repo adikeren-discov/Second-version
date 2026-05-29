@@ -199,3 +199,90 @@ class MutationEngine:
             ] = new_codon
 
         return mutated_candidate
+    
+    import random
+
+
+    def introduce_initial_mutations(
+        population,
+        mutation_rate,
+        genetic_code
+    ):
+        """
+        Deliberately damages an
+        already-correct population.
+
+        mutation_rate:
+        fraction of codons to mutate.
+
+        Example:
+        0.30 → mutate 30%
+        of codon positions.
+        """
+
+        all_codons = []
+
+        for codon_list in (
+            genetic_code.values()
+        ):
+
+            all_codons.extend(
+                codon_list
+            )
+
+        mutated_population = []
+
+        for candidate in (
+            population
+        ):
+
+            new_codons = (
+                candidate.codons.copy()
+            )
+
+            sequence_length = len(
+                new_codons
+            )
+
+            mutations_count = int(
+                mutation_rate
+                *
+                sequence_length
+            )
+
+            mutation_positions = (
+                random.sample(
+                    range(
+                        sequence_length
+                    ),
+                    mutations_count
+                )
+            )
+
+            for position in (
+                mutation_positions
+            ):
+
+                random_codon = (
+                    random.choice(
+                        all_codons
+                    )
+                )
+
+                new_codons[
+                    position
+                ] = (
+                    random_codon
+                )
+
+            mutated_candidate = (
+                CandidateSolution(
+                    new_codons
+                )
+            )
+
+            mutated_population.append(
+                mutated_candidate
+            )
+
+        return mutated_population

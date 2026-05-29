@@ -22,6 +22,8 @@ MUTATION_COUNT_WEIGHTS = [
 
 BASES = ["A", "C", "G", "T"]
 
+INITIAL_MISMATCH = 0
+
 INSULIN_SEQUENCE_FILE = (
     "data/insulin_target.txt"
 )
