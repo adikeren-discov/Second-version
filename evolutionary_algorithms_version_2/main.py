@@ -17,7 +17,7 @@ from mutation_engine import (
     
 )
 
-from evolutionary_algorithms_version_2.experiment_tracker import (
+from experiment_tracker import (
     EvolutionTracker
 )
 
