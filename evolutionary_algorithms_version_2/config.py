@@ -1,6 +1,6 @@
 POPULATION_SIZE = 30
 SURVIVORS = 20
-GENERATIONS = 30
+GENERATIONS = 200
 
 GC_MIN = 0.40
 GC_MAX = 0.60
@@ -22,14 +22,16 @@ MUTATION_COUNT_WEIGHTS = [
 
 BASES = ["A", "C", "G", "T"]
 
+INITIAL_MISMATCH = 0
+
 INSULIN_SEQUENCE_FILE = (
-    "data/insulin_target.txt"
+    "insulin_target.txt"
 )
 
 MAPPING_FILE = (
-    "data/genetic_code.json"
+    "genetic_code.json"
 )
 
 ECOLI_FREQUENCIES_FILE = (
-    "data/ecoli_frequencies.json"
+    "ecoli_frequencies.json"
 )

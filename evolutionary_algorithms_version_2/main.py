@@ -17,12 +17,17 @@ from mutation_engine import (
     
 )
 
+from experiment_tracker import (
+    EvolutionTracker
+)
+
 from config import (
     POPULATION_SIZE,
     GENERATIONS,
     INSULIN_SEQUENCE_FILE,
     MAPPING_FILE,
-    ECOLI_FREQUENCIES_FILE
+    ECOLI_FREQUENCIES_FILE,
+    INITIAL_MISMATCH
 )
 
 from processing import(
@@ -35,7 +40,8 @@ def run_strategy_simulation(
     strategy,
     strategy_name,
     population,
-    generations
+    generations,
+    tracker
 ):
     """
     Run evolutionary simulation.
@@ -85,6 +91,7 @@ def run_strategy_simulation(
             max(scores)
         )
 
+        """
         print(
             f"Generation "
             f"{generation+1:>3} | "
@@ -93,6 +100,35 @@ def run_strategy_simulation(
             f"Average top20: "
             f"{avg_score:.3f}"
         )
+        """
+
+        tracker.add_generation(
+        strategy_name=(
+            strategy_name
+        ),
+        generation=(
+            generation + 1
+        ),
+        avg_score=(
+            avg_score
+        ),
+        best_score=(
+            best_score
+        )
+    )
+        # 1. מציאת הפרט המצטיין ביותר באוכלוסייה הסופית
+    best_candidate = max(current_population, key=lambda ind: ind.fitness if ind.fitness is not None else -9999)
+    
+    print(f"\n{'-'*30}")
+    print(f"FINAL RESULTS FOR: {strategy_name}")
+    print(f"{'-'*30}")
+    # הדפסת רצף ה-DNA הטוב ביותר כמחרוזת רציפה אחת
+    print(f"Best DNA Sequence Found:\n{best_candidate.dna_sequence()}")
+    # הדפסת הציון שלו
+    print(f"Best Fitness Score: {best_score:.3f}")
+    # הדפסת מספר הצעדים (קריאות ה-Fitness הכולל) שלקח לתוכנית
+    print(f"Total Fitness Function Calls: {strategy.fitness_calls_counter}")
+    print(f"{'='*50}\n")
 
     return current_population
 
@@ -129,6 +165,19 @@ def main():
         )
         )
     )
+    initial_population = (
+    MutationEngine.introduce_initial_mutations(
+        population=(
+            initial_population
+            ),
+        mutation_rate=(
+            INITIAL_MISMATCH
+            ),
+        genetic_code=(
+            aa_to_codons
+            )
+    )
+)
     #print(f"insulin: {protein}")
     #print(initial_population)
 
@@ -156,7 +205,9 @@ def main():
         )
     )
 
-    
+    tracker = (
+    EvolutionTracker()
+    )
     
     run_strategy_simulation(
         strategy=(
@@ -170,7 +221,8 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
 
     run_strategy_simulation(
@@ -185,7 +237,8 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
 
     run_strategy_simulation(
@@ -200,8 +253,11 @@ def main():
         ),
         generations=(
             GENERATIONS
-        )
+        ),
+        tracker=tracker
     )
+
+    tracker.plot_results()
 
 if __name__ == "__main__":
     main()
