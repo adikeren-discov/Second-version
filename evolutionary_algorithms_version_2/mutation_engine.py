@@ -13,50 +13,30 @@ class MutationEngine:
         population_size
     ):
         """
-        Creates completely random
-        DNA sequences of the same
-        length as insulin.
+        Creates COMPLETELY RANDOM DNA sequences (Blind Initialization).
+        Does not look at the protein sequence letters, only matches the overall length.
         """
-
+        # 1. איסוף כל 64 הקודונים הקיימים בטבע לרשימה אחת שטוחה
         all_codons = []
-
-        for codon_list in (
-            genetic_code.values()
-        ):
-
-            all_codons.extend(
-                codon_list
-            )
+        for codon_list in genetic_code.values():
+            all_codons.extend(codon_list)
+            
+        # הסרת כפילויות אם יש, כדי שההגרלה תהיה הוגנת
+        all_codons = list(set(all_codons))
 
         population = []
+        protein_length = len(protein_sequence)
 
-        for _ in range(
-            population_size
-        ):
-
+        for _ in range(population_size):
             codons = []
 
-            for aa in protein_sequence:
+            # מגרילים קודונים אקראיים מתוך כל הטבע, כמספר האותיות שיש בחלבון
+            for _ in range(protein_length):
+                chosen_codon = random.choice(all_codons)
+                codons.append(chosen_codon)
 
-                chosen_codon = (
-                    random.choice(
-                        genetic_code[aa]
-                    )
-                )
-
-                codons.append(
-                    chosen_codon
-                )
-
-            candidate = (
-                CandidateSolution(
-                    codons
-                )
-            )
-
-            population.append(
-                candidate
-            )
+            candidate = CandidateSolution(codons)
+            population.append(candidate)
 
         return population
     

@@ -91,6 +91,7 @@ def run_strategy_simulation(
             max(scores)
         )
 
+        #"""
         print(
             f"Generation "
             f"{generation+1:>3} | "
@@ -99,6 +100,7 @@ def run_strategy_simulation(
             f"Average top20: "
             f"{avg_score:.3f}"
         )
+        #"""
 
         tracker.add_generation(
         strategy_name=(
@@ -113,7 +115,20 @@ def run_strategy_simulation(
         best_score=(
             best_score
         )
-)
+    )
+        # 1. מציאת הפרט המצטיין ביותר באוכלוסייה הסופית
+    best_candidate = max(current_population, key=lambda ind: ind.fitness if ind.fitness is not None else -9999)
+    
+    print(f"\n{'-'*30}")
+    print(f"FINAL RESULTS FOR: {strategy_name}")
+    print(f"{'-'*30}")
+    # הדפסת רצף ה-DNA הטוב ביותר כמחרוזת רציפה אחת
+    print(f"Best DNA Sequence Found:\n{best_candidate.dna_sequence()}")
+    # הדפסת הציון שלו
+    print(f"Best Fitness Score: {best_score:.3f}")
+    # הדפסת מספר הצעדים (קריאות ה-Fitness הכולל) שלקח לתוכנית
+    print(f"Total Fitness Function Calls: {strategy.fitness_calls_counter}")
+    print(f"{'='*50}\n")
 
     return current_population
 

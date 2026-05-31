@@ -28,6 +28,7 @@ class CodonOptimizationStrategy(
         self.frequencies_score = process_ecoli_frequencies(frequencies_file)
         self.codon_lookup = build_codon_lookup(self.genetic_mapping)
         self.top_k = 20
+        self.fitness_calls_counter = 0
 
     @abstractmethod
     def mutate_population(
@@ -145,7 +146,7 @@ class CodonOptimizationStrategy(
     population
     ):
         """
-        Evaluate fitness.
+        Evaluate fitness and append fitness score.
         """
 
         fitness_scores = []
@@ -166,6 +167,7 @@ class CodonOptimizationStrategy(
             fitness_scores.append(
                 score
             )
+            self.fitness_calls_counter += 1
 
         return fitness_scores
     
