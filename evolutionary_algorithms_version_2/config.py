@@ -25,13 +25,13 @@ BASES = ["A", "C", "G", "T"]
 INITIAL_MISMATCH = 0
 
 INSULIN_SEQUENCE_FILE = (
-    "data/insulin_target.txt"
+    "insulin_target.txt"
 )
 
 MAPPING_FILE = (
-    "data/genetic_code.json"
+    "genetic_code.json"
 )
 
 ECOLI_FREQUENCIES_FILE = (
-    "data/ecoli_frequencies.json"
+    "ecoli_frequencies.json"
 )
