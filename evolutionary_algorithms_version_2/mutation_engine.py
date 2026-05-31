@@ -16,8 +16,9 @@ class MutationEngine:
         Creates COMPLETELY RANDOM DNA sequences (Blind Initialization).
         Does not look at the protein sequence letters, only matches the overall length.
         """
-        # 1. איסוף כל 64 הקודונים הקיימים בטבע לרשימה אחת שטוחה
+
         all_codons = []
+
         for codon_list in genetic_code.values():
             all_codons.extend(codon_list)
             
@@ -34,7 +35,7 @@ class MutationEngine:
             for _ in range(protein_length):
                 chosen_codon = random.choice(all_codons)
                 codons.append(chosen_codon)
-
+                
             candidate = CandidateSolution(codons)
             population.append(candidate)
 
