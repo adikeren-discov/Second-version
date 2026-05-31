@@ -91,7 +91,7 @@ def run_strategy_simulation(
             max(scores)
         )
 
-        #"""
+        """
         print(
             f"Generation "
             f"{generation+1:>3} | "
@@ -100,7 +100,7 @@ def run_strategy_simulation(
             f"Average top20: "
             f"{avg_score:.3f}"
         )
-        #"""
+        """
 
         tracker.add_generation(
         strategy_name=(
